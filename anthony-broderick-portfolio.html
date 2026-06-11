@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anthony Broderick — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Lato:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #1a2e1a;
+  --forest-light: #2a4a2a;
+  --parchment: #f0ebe0;
+  --cream: #faf6ef;
+  --gold: #c9a84c;
+  --gold-light: #e0c06e;
+  --ink: #1c1c1c;
+  --ink-mid: #3a3a3a;
+  --ink-soft: #6a6a6a;
+  --rule: rgba(201,168,76,0.35);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--forest); color: var(--ink); font-family: 'Lato', sans-serif; overflow-x: hidden; }
+
+/* ── COVER ── */
+#cover-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 1400px; background: var(--forest);
+  transition: opacity 0.5s ease;
+}
+#cover-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.menu-cover {
+  width: min(460px, 88vw); height: min(660px, 88vh);
+  position: relative; transform-style: preserve-3d;
+  transform-origin: left center; cursor: pointer;
+  transition: transform 1.1s cubic-bezier(0.77,0,0.175,1);
+  border-radius: 4px 14px 14px 4px;
+  box-shadow: 20px 20px 60px rgba(0,0,0,0.7), -4px 0 12px rgba(0,0,0,0.4);
+}
+.menu-cover.open { transform: rotateY(-175deg); }
+
+.cover-front, .cover-back {
+  position: absolute; inset: 0;
+  border-radius: 4px 14px 14px 4px;
+  backface-visibility: hidden;
+}
+.cover-front {
+  background: linear-gradient(160deg,#2a4a2a 0%,#1a2e1a 60%,#111e11 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px; border: 1px solid rgba(201,168,76,0.2);
+}
+.cover-front::before {
+  content: ''; position: absolute; inset: 14px;
+  border: 1px solid var(--rule); border-radius: 2px 10px 10px 2px; pointer-events: none;
+}
+.cover-subtitle {
+  font-family: 'Lato', sans-serif; font-weight: 300; font-size: 10px;
+  letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+}
+.cover-name {
+  font-family: 'Playfair Display', serif; font-size: clamp(30px,6vw,48px);
+  font-weight: 900; color: var(--parchment); text-align: center; line-height: 1.1;
+}
+.cover-divider { width: 70px; height: 1px; background: var(--gold); margin: 18px auto; opacity: 0.7; }
+.cover-tagline {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 14px; color: rgba(240,235,224,0.6); text-align: center; letter-spacing: 0.04em;
+}
+.cover-hint {
+  position: absolute; bottom: 32px;
+  font-family: 'Lato', sans-serif; font-weight: 300; font-size: 10px;
+  letter-spacing: 0.3em; text-transform: uppercase; color: rgba(201,168,76,0.55);
+  animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.35} 50%{opacity:1} }
+.cover-back { background: var(--cream); transform: rotateY(180deg); }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--forest); border-bottom: 1px solid rgba(201,168,76,0.2);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 58px;
+}
+.nav-brand { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--parchment); letter-spacing: 0.06em; text-decoration: none; }
+.nav-links { display: flex; gap: 30px; list-style: none; }
+.nav-links a {
+  font-family: 'Lato', sans-serif; font-weight: 300; font-size: 10px;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(240,235,224,0.6); text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-cta {
+  font-family: 'Lato', sans-serif; font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold); text-decoration: none;
+  border: 1px solid rgba(201,168,76,0.4); padding: 7px 16px; border-radius: 2px; transition: all 0.2s;
+}
+.nav-cta:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+
+/* ── MAIN ── */
+main { background: var(--forest); padding-bottom: 60px; }
+
+/* ── PAGE CARD ── */
+.page {
+  background: var(--cream); max-width: 900px; margin: 0 auto 32px;
+  border-radius: 3px; box-shadow: 0 6px 40px rgba(0,0,0,0.5);
+  overflow: hidden; opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.page.visible { opacity: 1; transform: translateY(0); }
+
+.page-header {
+  background: var(--forest); padding: 32px 48px 28px; text-align: center; position: relative;
+}
+.page-header::after {
+  content: ''; position: absolute; bottom: 0; left: 48px; right: 48px;
+  height: 1px; background: var(--rule);
+}
+.section-number {
+  font-family: 'Lato', sans-serif; font-weight: 300; font-size: 10px;
+  letter-spacing: 0.45em; text-transform: uppercase; color: var(--gold);
+  display: block; margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif; font-size: clamp(24px,3.5vw,36px);
+  font-weight: 700; color: var(--parchment); letter-spacing: 0.03em;
+}
+.section-subtitle {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 14px; color: rgba(240,235,224,0.45); margin-top: 6px; letter-spacing: 0.04em;
+}
+.page-body { padding: 36px 48px; }
+
+/* ── TABLE OF CONTENTS PAGE ── */
+.toc-page {
+  background: var(--cream); max-width: 900px; margin: 0 auto 32px;
+  border-radius: 3px; box-shadow: 0 6px 40px rgba(0,0,0,0.5);
+  overflow: hidden; opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.toc-page.visible { opacity: 1; transform: translateY(0); }
+
+.toc-header {
+  background: var(--forest); padding: 36px 48px 32px; text-align: center; position: relative;
+}
+.toc-header::after {
+  content: ''; position: absolute; bottom: 0; left: 48px; right: 48px;
+  height: 1px; background: var(--rule);
+}
+.toc-welcome {
+  font-family: 'Lato', sans-serif; font-weight: 300; font-size: 10px;
+  letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold);
+  display: block; margin-bottom: 10px;
+}
+.toc-title {
+  font-family: 'Playfair Display', serif; font-size: clamp(28px,4vw,44px);
+  font-weight: 900; color: var(--parchment);
+}
+.toc-body { padding: 40px 48px 32px; }
+.toc-intro {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 16px; color: var(--ink-soft); text-align: center;
+  margin-bottom: 32px; letter-spacing: 0.03em; line-height: 1.6;
+}
+
+.toc-list { list-style: none; }
+.toc-item {
+  display: flex; align-items: center; gap: 0;
+  padding: 14px 0; border-bottom: 1px solid rgba(28,28,28,0.08);
+  cursor: pointer; transition: background 0.15s;
+  border-radius: 2px; padding-left: 8px; padding-right: 8px;
+  margin: 0 -8px;
+}
+.toc-item:last-child { border-bottom: none; }
+.toc-item:hover { background: rgba(26,46,26,0.04); }
+.toc-item:hover .toc-item-name { color: var(--forest); }
+.toc-item:hover .toc-item-num { color: var(--gold-light); }
+
+.toc-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(26,46,26,0.08); border: 1px solid rgba(26,46,26,0.1);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--forest); flex-shrink: 0; margin-right: 18px;
+  transition: background 0.2s;
+}
+.toc-item:hover .toc-icon { background: rgba(26,46,26,0.14); }
+
+.toc-item-content { flex: 1; min-width: 0; }
+.toc-item-num {
+  font-family: 'Lato', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+  display: block; margin-bottom: 2px; transition: color 0.2s;
+}
+.toc-item-name {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+  color: var(--ink); transition: color 0.2s;
+}
+.toc-item-desc {
+  font-family: 'Lato', sans-serif; font-size: 12px; color: var(--ink-soft);
+  margin-top: 2px; line-height: 1.4;
+}
+.toc-dots {
+  flex: 1; border-bottom: 1px dotted rgba(28,28,28,0.2);
+  margin: 0 16px; align-self: flex-end; margin-bottom: 8px;
+}
+.toc-page-num {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400;
+  color: rgba(28,28,28,0.25); flex-shrink: 0; width: 28px; text-align: right;
+}
+
+.toc-footer {
+  border-top: 1px solid rgba(28,28,28,0.08); padding-top: 24px; margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.toc-footer-text {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 13px; color: var(--ink-soft);
+}
+.toc-heart { color: var(--gold); font-size: 14px; }
+
+/* ── COMPACT PROJECT CARDS ── */
+.projects-grid { display: flex; flex-direction: column; gap: 0; }
+
+.proj-card {
+  display: flex; gap: 24px; padding: 20px 0;
+  border-bottom: 1px solid rgba(28,28,28,0.09); align-items: flex-start;
+}
+.proj-card:last-child { border-bottom: none; }
+
+.proj-thumb {
+  width: 110px; height: 82px; flex-shrink: 0;
+  background: var(--forest); border-radius: 3px; overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15); position: relative;
+}
+.proj-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.proj-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--forest-light), var(--forest));
+  color: rgba(201,168,76,0.35);
+}
+.proj-badge {
+  position: absolute; top: 5px; right: 5px;
+  background: var(--gold); color: var(--forest);
+  font-family: 'Lato', sans-serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px;
+}
+
+.proj-body { flex: 1; min-width: 0; }
+.proj-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.proj-name {
+  font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink);
+}
+.proj-dots { flex: 1; border-bottom: 1px dotted rgba(28,28,28,0.2); margin-bottom: 3px; min-width: 20px; }
+.proj-date { font-family: 'Lato', sans-serif; font-size: 10px; color: var(--ink-soft); letter-spacing: 0.08em; white-space: nowrap; }
+.proj-desc { font-family: 'Lato', sans-serif; font-size: 12px; line-height: 1.6; color: var(--ink-mid); margin-bottom: 8px; }
+.proj-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag {
+  font-family: 'Lato', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--forest); background: rgba(26,46,26,0.09);
+  border: 1px solid rgba(26,46,26,0.15); padding: 3px 8px; border-radius: 2px;
+}
+.proj-link {
+  font-family: 'Lato', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--forest);
+  text-decoration: none; border-bottom: 1px solid rgba(26,46,26,0.3);
+  padding-bottom: 1px; white-space: nowrap; transition: color 0.2s, border-color 0.2s;
+}
+.proj-link:hover { color: var(--gold); border-color: var(--gold); }
+
+/* ── EXPERIENCE ── */
+.exp-item { padding: 20px 0; border-bottom: 1px solid rgba(28,28,28,0.09); }
+.exp-item:last-child { border-bottom: none; }
+.exp-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
+.exp-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--ink); }
+.exp-dates { font-family: 'Lato', sans-serif; font-size: 10px; color: var(--gold); font-weight: 700; letter-spacing: 0.1em; }
+.exp-company { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+.exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.exp-bullets li { font-family: 'Lato', sans-serif; font-size: 13px; line-height: 1.55; color: var(--ink-mid); padding-left: 16px; position: relative; }
+.exp-bullets li::before { content: '—'; position: absolute; left: 0; color: var(--gold); font-size: 11px; }
+
+/* ── EDUCATION ── */
+.edu-item { padding: 20px 0; border-bottom: 1px solid rgba(28,28,28,0.09); }
+.edu-item:last-child { border-bottom: none; }
+.edu-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
+.edu-school { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--ink); }
+.edu-dates { font-family: 'Lato', sans-serif; font-size: 10px; color: var(--gold); font-weight: 700; letter-spacing: 0.1em; }
+.edu-degree { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+.coursework-label { font-family: 'Lato', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 7px; }
+.coursework-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.course-pill { font-family: 'Lato', sans-serif; font-size: 11px; color: var(--ink-mid); background: rgba(26,46,26,0.07); border: 1px solid rgba(26,46,26,0.12); padding: 4px 10px; border-radius: 100px; }
+
+/* ── SKILLS 2-col ── */
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(28,28,28,0.09); }
+.skill-category-label { font-family: 'Lato', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+.skill-list { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* ── ABOUT ── */
+.about-placeholder { border: 2px dashed rgba(26,46,26,0.18); border-radius: 4px; padding: 32px; text-align: center; }
+.about-placeholder p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--ink-soft); margin-bottom: 10px; }
+.about-placeholder small { font-family: 'Lato', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(26,46,26,0.35); }
+
+/* ── RESUME CTA ── */
+.resume-cta {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  background: var(--forest); border-radius: 3px; padding: 22px 28px;
+  margin-top: 20px; flex-wrap: wrap;
+}
+.resume-cta-text { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 600; color: var(--parchment); }
+.resume-cta-sub { font-family: 'Lato', sans-serif; font-size: 12px; color: rgba(240,235,224,0.5); margin-top: 3px; }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  background: var(--gold); color: var(--forest);
+  font-family: 'Lato', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.25em; text-transform: uppercase; text-decoration: none;
+  padding: 12px 26px; border-radius: 2px; transition: background 0.2s; white-space: nowrap;
+}
+.btn-primary:hover { background: var(--gold-light); }
+
+/* ── ORNAMENTAL RULE ── */
+.orn { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.orn::before, .orn::after { content: ''; flex: 1; height: 1px; background: rgba(28,28,28,0.1); }
+.orn span { color: var(--gold); font-size: 13px; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--cream); max-width: 900px; margin: 0 auto;
+  border-radius: 3px; padding: 36px 48px; text-align: center;
+  box-shadow: 0 6px 40px rgba(0,0,0,0.5);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+footer.visible { opacity: 1; transform: translateY(0); }
+.footer-ornament { font-size: 20px; color: var(--gold); margin-bottom: 14px; display: block; }
+.footer-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--ink); margin-bottom: 6px; }
+.footer-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--ink-soft); margin-bottom: 22px; }
+.footer-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+.footer-link { font-family: 'Lato', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--forest); text-decoration: none; padding-bottom: 2px; border-bottom: 1px solid rgba(26,46,26,0.25); transition: color 0.2s, border-color 0.2s; }
+.footer-link:hover { color: var(--gold); border-color: var(--gold); }
+.footer-copy { font-family: 'Lato', sans-serif; font-size: 10px; color: rgba(28,28,28,0.3); margin-top: 28px; letter-spacing: 0.1em; }
+
+/* ── MOBILE ── */
+@media (max-width: 700px) {
+  nav { padding: 0 18px; }
+  .nav-links { display: none; }
+  .page-body, .toc-body { padding: 24px 20px; }
+  .page-header, .toc-header { padding: 24px 20px 20px; }
+  .proj-card { flex-direction: column; }
+  .proj-thumb { width: 100%; height: 160px; }
+  .skills-grid { grid-template-columns: 1fr; }
+  footer { padding: 28px 20px; }
+  .toc-dots { display: none; }
+  .toc-page-num { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-cover, .page, .toc-page, footer { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── COVER ── -->
+<div id="cover-overlay">
+  <div class="menu-cover" id="menuCover">
+    <div class="cover-front">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="margin-bottom:20px;opacity:.85">
+        <circle cx="26" cy="26" r="24" stroke="#c9a84c" stroke-width="1"/>
+        <path d="M17 16 L17 36 M17 26 L35 26 M35 16 L35 36" stroke="#c9a84c" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span class="cover-subtitle">Portfolio</span>
+      <div class="cover-name">Anthony<br>Broderick</div>
+      <div class="cover-divider"></div>
+      <p class="cover-tagline">Computer Engineer &amp; AI Candidate</p>
+      <span class="cover-hint">Tap to open</span>
+    </div>
+    <div class="cover-back"></div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-brand">Anthony Broderick</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <a href="https://www.linkedin.com/in/anthony-broderick-1b755a221/" target="_blank" class="nav-cta">Connect</a>
+</nav>
+
+<main>
+
+  <!-- ── TABLE OF CONTENTS ── -->
+  <div class="toc-page" id="toc">
+    <div class="toc-header">
+      <span class="toc-welcome">Welcome to</span>
+      <h1 class="toc-title">The Menu</h1>
+    </div>
+    <div class="toc-body">
+      <p class="toc-intro">A little bit about me, the work I do, and what I'm learning.</p>
+      <ul class="toc-list">
+
+        <li class="toc-item" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">
+          <div class="toc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="toc-item-content">
+            <span class="toc-item-num">01</span>
+            <span class="toc-item-name">Projects</span>
+            <p class="toc-item-desc">A selection of things built, designed, and brought to life.</p>
+          </div>
+          <span class="toc-dots"></span>
+          <span class="toc-page-num">01</span>
+        </li>
+
+        <li class="toc-item" onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})">
+          <div class="toc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          </div>
+          <div class="toc-item-content">
+            <span class="toc-item-num">02</span>
+            <span class="toc-item-name">Experience</span>
+            <p class="toc-item-desc">Where I've worked, what I've done, and the skills gained.</p>
+          </div>
+          <span class="toc-dots"></span>
+          <span class="toc-page-num">02</span>
+        </li>
+
+        <li class="toc-item" onclick="document.getElementById('education').scrollIntoView({behavior:'smooth'})">
+          <div class="toc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div class="toc-item-content">
+            <span class="toc-item-num">03</span>
+            <span class="toc-item-name">Education</span>
+            <p class="toc-item-desc">Academic foundations and the disciplines shaping my work.</p>
+          </div>
+          <span class="toc-dots"></span>
+          <span class="toc-page-num">03</span>
+        </li>
+
+        <li class="toc-item" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+          <div class="toc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div class="toc-item-content">
+            <span class="toc-item-num">04</span>
+            <span class="toc-item-name">About</span>
+            <p class="toc-item-desc">A little about me, my interests, and what drives me.</p>
+          </div>
+          <span class="toc-dots"></span>
+          <span class="toc-page-num">04</span>
+        </li>
+
+        <li class="toc-item" onclick="window.open('https://buymeacoffee.com/anthonybroderick','_blank')">
+          <div class="toc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          </div>
+          <div class="toc-item-content">
+            <span class="toc-item-num">05</span>
+            <span class="toc-item-name">Buy Me a Coffee</span>
+            <p class="toc-item-desc">If you enjoy my work, every bit is greatly appreciated.</p>
+          </div>
+          <span class="toc-dots"></span>
+          <span class="toc-page-num">05</span>
+        </li>
+
+      </ul>
+      <div class="toc-footer">
+        <span class="toc-heart">♡</span>
+        <span class="toc-footer-text">Thank you for visiting!</span>
+        <span class="toc-heart">♡</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROJECTS ── -->
+  <section id="projects" class="page">
+    <div class="page-header">
+      <span class="section-number">Course 01</span>
+      <h2 class="section-title">The Projects</h2>
+      <p class="section-subtitle">A curated selection of things built, designed, and brought to life</p>
+    </div>
+    <div class="page-body">
+      <div class="projects-grid">
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>
+            <span class="proj-badge">Live</span>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">KISS Budgeting App</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">Mar 2026 – Present</span>
+            </div>
+            <p class="proj-desc">Full-stack iOS budgeting app with an on-device, privacy-first data model. Owned the complete launch pipeline — App Store metadata, keyword optimization, and a custom support site. Conducted competitive analysis to define a differentiated feature set.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">iOS</span><span class="tag">Full-Stack</span><span class="tag">AI-Assisted</span><span class="tag">App Store</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">Digital Circuit Fault Analysis Tool</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">Aug 2025 – Jan 2026</span>
+            </div>
+            <p class="proj-desc">Interactive ATPG system in Python for gate-level circuits using the SSF model. Implemented D-Algorithm and PODEM, and built a circuit simulation engine with a netlist parser to validate test vectors across benchmark circuits.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">Python</span><span class="tag">VLSI</span><span class="tag">OOP</span><span class="tag">Netlist Parsing</span></div>
+              <a href="https://github.com/anthony-broderick/fault_tpg" target="_blank" class="proj-link">GitHub →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 000 20M2 12h20"/></svg></div>
+            <span class="proj-badge">In Progress</span>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">ML Sports Detection &amp; Tracking</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">Jul – Aug 2025</span>
+            </div>
+            <p class="proj-desc">Trained CV models for ball detection using Roboflow, benchmarking on accuracy and inference speed. Engineered algorithms to estimate player kinematics and interpolate missing detection frames. Evaluated with mAP, precision/recall, and latency.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">Python</span><span class="tag">ML/CV</span><span class="tag">Roboflow</span><span class="tag">Object Tracking</span></div>
+              <a href="https://github.com/anthony-broderick/ML-sports-analysis" target="_blank" class="proj-link">GitHub →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">Stock Prediction Program</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">2024</span>
+            </div>
+            <p class="proj-desc">C# application built on the .NET Framework with OOP design, CSV parsing, and interactive user responses for stock trend prediction and visualization.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">C#</span><span class="tag">.NET</span><span class="tag">OOP</span><span class="tag">CSV Parsing</span></div>
+              <a href="https://github.com/anthony-broderick/StockPredictionProgram" target="_blank" class="proj-link">GitHub →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">Wireless Dead Drop Device</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">2024</span>
+            </div>
+            <p class="proj-desc">Raspberry Pi-based wireless file transfer device built with full AGILE methodology — from requirements through product testing. Demonstrates Linux CLI proficiency and end-to-end hardware project delivery.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">Raspberry Pi</span><span class="tag">Linux</span><span class="tag">AGILE</span><span class="tag">Hardware</span></div>
+              <a href="https://youtu.be/HEC_kuAh-Uo" target="_blank" class="proj-link">Demo →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg></div>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">Auto Cropper</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">2024</span>
+            </div>
+            <p class="proj-desc">Python + OpenCV tool to automatically detect and crop subjects from images, removing backgrounds and centering with precision. Built with multi-processing for batch automation.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">Python</span><span class="tag">OpenCV</span><span class="tag">CV</span><span class="tag">Automation</span></div>
+              <a href="https://github.com/anthony-broderick/auto-cropper" target="_blank" class="proj-link">GitHub →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-thumb">
+            <div class="proj-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          </div>
+          <div class="proj-body">
+            <div class="proj-top">
+              <span class="proj-name">Analysis of Algorithms</span>
+              <span class="proj-dots"></span>
+              <span class="proj-date">2024</span>
+            </div>
+            <p class="proj-desc">Comparative study of Brute Force, Dynamic Programming, and Greedy algorithms on optimization problems. Benchmarked performance at scale with data plotting to visualize time complexity tradeoffs.</p>
+            <div class="proj-bottom">
+              <div class="proj-tags"><span class="tag">Python</span><span class="tag">Dynamic Programming</span><span class="tag">Backtracking</span><span class="tag">Data Plotting</span></div>
+              <a href="https://github.com/anthony-broderick/anaylsis-of-algorithms" target="_blank" class="proj-link">GitHub →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EXPERIENCE ── -->
+  <section id="experience" class="page">
+    <div class="page-header">
+      <span class="section-number">Course 02</span>
+      <h2 class="section-title">Experience</h2>
+      <p class="section-subtitle">Where I've worked, what I've done, and the skills gained along the way</p>
+    </div>
+    <div class="page-body">
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-title">Pizza Chef</span>
+          <span class="exp-dates">Feb 2026 – Present</span>
+        </div>
+        <p class="exp-company">Carmine's Gourmet Market — Palm Beach Gardens, FL</p>
+        <ul class="exp-bullets">
+          <li>Oversee high-volume pizza production in a fast-paced team environment, maintaining quality, consistency, and efficiency while handling customer interactions.</li>
+          <li>Lead coordination of large and custom event orders, managing logistics, timelines, and client communication to ensure accurate and on-time delivery.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-title">President &amp; Captain</span>
+          <span class="exp-dates">May 2023 – May 2025</span>
+        </div>
+        <p class="exp-company">Men's Lacrosse Club at USF — Tampa, FL</p>
+        <ul class="exp-bullets">
+          <li>Directed strategic planning and operations for a 40+ member organization, leading staff recruitment and applying structured evaluation to select high-impact team members.</li>
+          <li>Managed a six-figure budget, developing financial allocation strategies, budget deviations, and presenting funding justifications to university organizations.</li>
+        </ul>
+      </div>
+
+      <div class="resume-cta">
+        <div>
+          <p class="resume-cta-text">Full Résumé</p>
+          <p class="resume-cta-sub">Download the complete PDF</p>
+        </div>
+        <a href="Anthony-Broderick-Summer-2026-Resume__1_.pdf" download class="btn-primary">Download PDF</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── EDUCATION ── -->
+  <section id="education" class="page">
+    <div class="page-header">
+      <span class="section-number">Course 03</span>
+      <h2 class="section-title">Education</h2>
+      <p class="section-subtitle">Academic foundations and the disciplines shaping my work</p>
+    </div>
+    <div class="page-body">
+
+      <div class="edu-item">
+        <div class="edu-header">
+          <span class="edu-school">Florida Atlantic University</span>
+          <span class="edu-dates">Starting Fall 2026</span>
+        </div>
+        <p class="edu-degree">Master of Science in Artificial Intelligence — Boca Raton, FL (Expected Dec 2027)</p>
+      </div>
+
+      <div class="edu-item">
+        <div class="edu-header">
+          <span class="edu-school">University of South Florida</span>
+          <span class="edu-dates">Graduated Dec 2025</span>
+        </div>
+        <p class="edu-degree">Bachelor of Science in Computer Engineering — Tampa, FL</p>
+        <p class="coursework-label">Relevant Coursework</p>
+        <div class="coursework-grid">
+          <span class="course-pill">VLSI Testing</span>
+          <span class="course-pill">CMOS-VLSI Design</span>
+          <span class="course-pill">Computer Logic &amp; Design</span>
+          <span class="course-pill">Operating Systems</span>
+          <span class="course-pill">Data Structures</span>
+          <span class="course-pill">Analysis of Algorithms</span>
+          <span class="course-pill">Computer Architecture</span>
+          <span class="course-pill">Hardware Accelerators for ML</span>
+        </div>
+      </div>
+
+      <div class="skills-grid">
+        <div>
+          <p class="skill-category-label">Technical Skills</p>
+          <div class="skill-list">
+            <span class="tag">Python</span><span class="tag">C#</span><span class="tag">Verilog</span>
+            <span class="tag">VHDL</span><span class="tag">SQL</span><span class="tag">Bash / CLI</span>
+            <span class="tag">Git / GitHub</span><span class="tag">Microsoft Office</span>
+          </div>
+        </div>
+        <div>
+          <p class="skill-category-label">Soft Skills</p>
+          <div class="skill-list">
+            <span class="tag">Public Speaking</span><span class="tag">Budgeting</span>
+            <span class="tag">Event Planning</span><span class="tag">Research</span>
+            <span class="tag">Organization</span><span class="tag">Customer Service</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── ABOUT ── -->
+  <section id="about" class="page">
+    <div class="page-header">
+      <span class="section-number">Course 04</span>
+      <h2 class="section-title">About</h2>
+      <p class="section-subtitle">A little about me, my interests, and what drives me</p>
+    </div>
+    <div class="page-body">
+      <div class="about-placeholder">
+        <p>"This section is reserved for the chef's personal story."</p>
+        <small>✦ Replace this placeholder with your own words ✦</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-ornament">✦</span>
+    <h3 class="footer-title">Let's Connect</h3>
+    <p class="footer-sub">Always open to interesting problems and new opportunities</p>
+    <div class="footer-links">
+      <a href="mailto:atbrod20@gmail.com" class="footer-link">Email</a>
+      <a href="https://www.linkedin.com/in/anthony-broderick-1b755a221/" target="_blank" class="footer-link">LinkedIn</a>
+      <a href="https://github.com/anthony-broderick" target="_blank" class="footer-link">GitHub</a>
+      <a href="https://buymeacoffee.com/anthonybroderick" target="_blank" class="footer-link">Buy Me a Coffee</a>
+    </div>
+    <p class="footer-copy">© 2026 Anthony Broderick — All rights reserved</p>
+  </footer>
+
+</main>
+
+<script>
+  // Cover flip
+  const cover = document.getElementById('menuCover');
+  const overlay = document.getElementById('cover-overlay');
+  document.body.style.overflow = 'hidden';
+
+  cover.addEventListener('click', () => {
+    cover.classList.add('open');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+      revealAll();
+    }, 1200);
+  });
+
+  function revealAll() {
+    const els = document.querySelectorAll('.page, .toc-page, footer');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.06 });
+    els.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) { el.classList.add('visible'); }
+      else { io.observe(el); }
+    });
+  }
+</script>
+</body>
+</html>
