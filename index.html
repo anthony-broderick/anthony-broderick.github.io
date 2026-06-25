@@ -212,8 +212,8 @@
     border-radius: 2px; z-index: 10; overflow: hidden;
     display: flex; flex-direction: column;
   }
-  .sticky-blue { width: 200px; top: 48px; right: 26px; background: #c8d8f5; box-shadow: 2px 3px 12px rgba(0,0,0,0.5); }
-  .sticky-yellow { width: 215px; top: 48px; right: 242px; background: #f5e97a; box-shadow: 2px 3px 12px rgba(0,0,0,0.5); }
+  .sticky-blue { width: 210px; top: 48px; right: 16px; background: #c8d8f5; box-shadow: 2px 3px 12px rgba(0,0,0,0.5); }
+  .sticky-yellow { width: 210px; top: 218px; right: 16px; background: #f5e97a; box-shadow: 2px 3px 12px rgba(0,0,0,0.5); }
 
   .sticky-note-header {
     height: 22px; display: flex; align-items: center; justify-content: center;
@@ -305,9 +305,6 @@
     <div class="menubar-left">
       <span class="menubar-apple">&#63743;</span>
       <span class="menubar-item bold">Anthony Broderick</span>
-      <span class="menubar-item">File</span>
-      <span class="menubar-item">Edit</span>
-      <span class="menubar-item">View</span>
     </div>
     <div class="menubar-right" id="clock"></div>
   </div>
@@ -638,12 +635,6 @@ USF '25 · FAU MS AI '27.</div>
   <!-- ════════════════ DOCK ════════════════ -->
   <div class="dock">
     <div class="dock-item">
-      <div class="dock-btn" onclick="document.getElementById('check-email').classList.add('done'); window.location.href='mailto:atbrod20@gmail.com'">
-        <img src="assets/icon-mail.png" alt="Email" />
-      </div>
-      <div class="dock-tooltip">Email Anthony</div>
-    </div>
-    <div class="dock-item">
       <div class="dock-btn" onclick="autoCheck('check-linkedin'); document.getElementById('check-linkedin').classList.add('done'); window.open('https://www.linkedin.com/in/anthony-broderick-1b755a221/','_blank')">
         <img src="assets/icon-linkedin.png" alt="LinkedIn" />
       </div>
@@ -821,11 +812,11 @@ setInterval(updateClock, 1000);
   requestAnimationFrame(draw);
 })();
 
-/* ── Sticky drag + resize ── */
+/* ── Sticky drag + resize (mouse & touch) ── */
 function makeStickyInteractive(stickyId, dragId, resizeId) {
-  const sticky      = document.getElementById(stickyId);
-  const dragHandle  = document.getElementById(dragId);
-  const resizeHandle= document.getElementById(resizeId);
+  const sticky       = document.getElementById(stickyId);
+  const dragHandle   = document.getElementById(dragId);
+  const resizeHandle = document.getElementById(resizeId);
   const STICKY_Z = 10, DRAG_Z = 15;
 
   function anchorToLeft() {
@@ -837,9 +828,19 @@ function makeStickyInteractive(stickyId, dragId, resizeId) {
     sticky.style.right = 'auto';
   }
 
+  function getDesktopRect() { return document.getElementById('desktop').getBoundingClientRect(); }
+
   let dragging = false, dx = 0, dy = 0;
   let resizing = false, startX = 0, startY = 0, startW = 0, startH = 0;
 
+  /* ── helpers to extract coords from mouse OR touch event ── */
+  function clientXY(e) {
+    if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  /* ── DRAG: mouse ── */
   dragHandle.addEventListener('mousedown', e => {
     e.preventDefault(); anchorToLeft(); dragging = true;
     const rect = sticky.getBoundingClientRect();
@@ -847,6 +848,16 @@ function makeStickyInteractive(stickyId, dragId, resizeId) {
     sticky.style.zIndex = DRAG_Z;
   });
 
+  /* ── DRAG: touch ── */
+  dragHandle.addEventListener('touchstart', e => {
+    e.preventDefault(); anchorToLeft(); dragging = true;
+    const { x, y } = clientXY(e);
+    const rect = sticky.getBoundingClientRect();
+    dx = x - rect.left; dy = y - rect.top;
+    sticky.style.zIndex = DRAG_Z;
+  }, { passive: false });
+
+  /* ── RESIZE: mouse ── */
   if (resizeHandle) {
     resizeHandle.addEventListener('mousedown', e => {
       e.preventDefault(); e.stopPropagation(); anchorToLeft(); resizing = true;
@@ -854,22 +865,57 @@ function makeStickyInteractive(stickyId, dragId, resizeId) {
       startW = sticky.offsetWidth; startH = sticky.offsetHeight;
       sticky.style.zIndex = DRAG_Z;
     });
+
+    /* ── RESIZE: touch ── */
+    resizeHandle.addEventListener('touchstart', e => {
+      e.preventDefault(); e.stopPropagation(); anchorToLeft(); resizing = true;
+      const { x, y } = clientXY(e);
+      startX = x; startY = y;
+      startW = sticky.offsetWidth; startH = sticky.offsetHeight;
+      sticky.style.zIndex = DRAG_Z;
+    }, { passive: false });
   }
 
+  /* ── MOVE: mouse ── */
   document.addEventListener('mousemove', e => {
+    if (!dragging && !resizing) return;
+    const dr = getDesktopRect();
     if (dragging) {
-      const dr = document.getElementById('desktop').getBoundingClientRect();
       let nx = Math.max(0, Math.min(e.clientX - dx - dr.left, dr.width  - sticky.offsetWidth));
       let ny = Math.max(28, Math.min(e.clientY - dy - dr.top,  dr.height - sticky.offsetHeight));
       sticky.style.left = nx + 'px'; sticky.style.top = ny + 'px';
     }
     if (resizing) {
-      sticky.style.width  = Math.max(120, startW + (e.clientX - startX)) + 'px';
-      sticky.style.height = Math.max(80,  startH + (e.clientY - startY)) + 'px';
+      sticky.style.width  = Math.max(140, startW + (e.clientX - startX)) + 'px';
+      sticky.style.height = Math.max(90,  startH + (e.clientY - startY)) + 'px';
     }
   });
 
+  /* ── MOVE: touch ── */
+  document.addEventListener('touchmove', e => {
+    if (!dragging && !resizing) return;
+    e.preventDefault();
+    const { x, y } = clientXY(e);
+    const dr = getDesktopRect();
+    if (dragging) {
+      let nx = Math.max(0, Math.min(x - dx - dr.left, dr.width  - sticky.offsetWidth));
+      let ny = Math.max(28, Math.min(y - dy - dr.top,  dr.height - sticky.offsetHeight));
+      sticky.style.left = nx + 'px'; sticky.style.top = ny + 'px';
+    }
+    if (resizing) {
+      sticky.style.width  = Math.max(140, startW + (x - startX)) + 'px';
+      sticky.style.height = Math.max(90,  startH + (y - startY)) + 'px';
+    }
+  }, { passive: false });
+
+  /* ── END: mouse ── */
   document.addEventListener('mouseup', () => {
+    if (dragging || resizing) sticky.style.zIndex = STICKY_Z;
+    dragging = false; resizing = false;
+  });
+
+  /* ── END: touch ── */
+  document.addEventListener('touchend', () => {
     if (dragging || resizing) sticky.style.zIndex = STICKY_Z;
     dragging = false; resizing = false;
   });
