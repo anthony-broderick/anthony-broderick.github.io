@@ -331,6 +331,10 @@
       <div class="icon-wrap"><img src="assets/icon-resume.png" alt="Resume" /></div>
       <div class="icon-label">Resume.pdf</div>
     </div>
+    <div class="desktop-icon" onclick="openGraphics()">
+      <div class="icon-wrap"><img src="assets/graphics.png" alt="Graphics Design" style="object-fit:cover;border-radius:8px;" /></div>
+      <div class="icon-label">Graphics Design</div>
+    </div>
   </div>
 
   <!-- ════════════════ WINDOWS ════════════════ -->
@@ -613,6 +617,9 @@ USF '25 · FAU MS AI '27.</div>
       <div class="check-item" id="check-education" onclick="checkItem('check-education'); openWindow('education');">
         <div class="check-box"></div><span class="check-label">Check Education</span>
       </div>
+      <div class="check-item" id="check-graphics" onclick="openGraphics();">
+        <div class="check-box"></div><span class="check-label">View Graphics Design</span>
+      </div>
       <div class="check-item" id="check-linkedin" onclick="checkItem('check-linkedin'); window.open('https://www.linkedin.com/in/anthony-broderick-1b755a221/','_blank');">
         <div class="check-box"></div><span class="check-label">Connect on LinkedIn</span>
       </div>
@@ -718,6 +725,13 @@ function openProj(key) {
 function goBackProj() {
   document.getElementById('win-proj-detail').classList.remove('active');
   document.getElementById('win-projects').classList.add('active');
+}
+
+/* ── Graphics Design portfolio link ── */
+function openGraphics() {
+  const el = document.getElementById('check-graphics');
+  if (el) el.classList.add('done');
+  window.open('https://sites.google.com/view/anthonybroderick/recruiting', '_blank');
 }
 
 /* ── Checklist ── */
