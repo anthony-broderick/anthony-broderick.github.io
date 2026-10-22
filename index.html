@@ -75,7 +75,7 @@
     border: 0.5px solid rgba(0,255,80,0.2);
     box-shadow: 0 24px 80px rgba(0,0,0,0.75), inset 0 1px 0 rgba(0,255,80,0.07);
     display: none; z-index: 30;
-    max-height: calc(100vh - 80px); flex-direction: column;
+    max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); flex-direction: column;
   }
   .window.active { display: flex; }
 
@@ -91,7 +91,7 @@
   .window-title { flex: 1; text-align: center; font-size: 13px; color: rgba(160,255,160,0.5); font-weight: 500; }
   .tl-spacer { width: 45px; }
 
-  .window-body { padding: 20px 22px 22px; overflow-y: auto; flex: 1; }
+  .window-body { padding: 20px 22px 22px; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; }
   .window-body::-webkit-scrollbar { width: 4px; }
   .window-body::-webkit-scrollbar-thumb { background: rgba(0,255,80,0.18); border-radius: 2px; }
 
@@ -351,6 +351,10 @@
     </div>
     <div class="window-body">
       <div class="folder-grid">
+        <div class="folder-item" onclick="openProj('flock')">
+          <img class="fi-img" src="assets/proj-flock.png" alt="Flock">
+          <div class="fi-label">Flock Job Tracker</div>
+        </div>
         <div class="folder-item" onclick="openProj('kiss')">
           <img class="fi-img" src="assets/proj-kiss.png" alt="KISS Budgeting">
           <div class="fi-label">KISS Budgeting App</div>
@@ -448,6 +452,12 @@
             <div class="exp-meta">MS in Artificial Intelligence &middot; Boca Raton, FL &middot; Starting Fall 2026 (Expected Dec 2027)</div>
           </div>
         </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,255,80,0.33);margin:10px 0 6px;">Relevant Coursework</div>
+        <div class="course-pills">
+          <span class="cpill">Social Networks/Big Data Analytics</span>
+          <span class="cpill">Computational Foundations in AI</span>
+          <span class="cpill">Computer Vision</span>
+        </div>
       </div>
       <div class="exp-card">
         <div class="edu-img-wrap">
@@ -476,6 +486,10 @@
             <span class="gtag">Python</span><span class="gtag">C#</span><span class="gtag">Verilog</span>
             <span class="gtag">VHDL</span><span class="gtag">SQL</span><span class="gtag">Bash/CLI</span>
             <span class="gtag">Git/GitHub</span><span class="gtag">OpenCV</span>
+            <span class="gtag">Swift</span><span class="gtag">JavaScript</span><span class="gtag">HTML</span>
+            <span class="gtag">CSS</span><span class="gtag">Agile</span><span class="gtag">MATLAB</span>
+            <span class="gtag">Supabase</span><span class="gtag">PostgreSQL</span><span class="gtag">REST APIs</span>
+            <span class="gtag">Cloudflare Workers</span>
           </div>
         </div>
         <div>
@@ -568,11 +582,6 @@
           <div class="contact-info"><strong>GitHub</strong><span>github.com/anthony-broderick</span></div>
           <span class="contact-arrow">↗</span>
         </a>
-        <a href="https://buymeacoffee.com/anthonybroderick" target="_blank" rel="noopener" class="contact-row">
-          <div class="contact-icon-wrap" style="background:#FFDD00;"><span class="contact-icon-emoji">☕</span></div>
-          <div class="contact-info"><strong>Buy Me a Coffee</strong><span>buymeacoffee.com/anthonybroderick</span></div>
-          <span class="contact-arrow">↗</span>
-        </a>
       </div>
     </div>
   </div>
@@ -587,7 +596,6 @@
     <div class="sticky-body">Hi, I'm Anthony 👋
 
 Computer Engineer → AI Candidate.
-Builder of KISS Budgeting.
 USF '25 · FAU MS AI '27.</div>
     <div class="sticky-resize-handle" id="sticky-resize">
       <svg viewBox="0 0 10 10" fill="none" width="11" height="11">
@@ -626,9 +634,6 @@ USF '25 · FAU MS AI '27.</div>
       <div class="check-item" id="check-email" onclick="checkItem('check-email'); window.location.href='mailto:atbrod20@gmail.com';">
         <div class="check-box"></div><span class="check-label">Email Anthony Broderick</span>
       </div>
-      <div class="check-item" id="check-coffee" onclick="checkItem('check-coffee'); window.open('https://buymeacoffee.com/anthonybroderick','_blank');">
-        <div class="check-box"></div><span class="check-label">Buy Anthony a Coffee ☕</span>
-      </div>
     </div>
     <div class="sticky-resize-handle" id="sticky2-resize">
       <svg viewBox="0 0 10 10" fill="none" width="11" height="11">
@@ -661,13 +666,6 @@ USF '25 · FAU MS AI '27.</div>
     </div>
     <div class="dock-divider"></div>
     <div class="dock-item">
-      <div class="dock-btn" style="background:#FFDD00;" onclick="document.getElementById('check-coffee').classList.add('done'); window.open('https://buymeacoffee.com/anthonybroderick','_blank')">
-        <span class="dock-btn-emoji">☕</span>
-      </div>
-      <div class="dock-tooltip">Buy Me a Coffee</div>
-    </div>
-    <div class="dock-divider"></div>
-    <div class="dock-item">
       <div class="dock-btn" style="border-radius:50%;overflow:hidden;" onclick="openWindow('about')">
         <img src="assets/icon-headshot.png" alt="About" style="border-radius:50%;" />
       </div>
@@ -680,7 +678,8 @@ USF '25 · FAU MS AI '27.</div>
 <script>
 /* ── Project data ── */
 const projData = {
-  kiss:     { title:'KISS Budgeting App',               date:'Mar 2026 – Present',   img:'assets/proj-kiss.png',      badge:'🟢 Live on App Store', desc:'Full-stack iOS budgeting app with an on-device, privacy-first data model. Owned the complete launch pipeline — App Store metadata, keyword optimization, and a custom support site. Conducted competitive analysis to define a differentiated feature set.', tags:['iOS','Full-Stack','AI-Assisted','App Store','WKWebView','IndexedDB'], link:null },
+  flock:    { title:'Flock - iOS Job Tracker',           date:'Jul 2026 – Present',   img:'assets/proj-flock.png',     bg:'linear-gradient(135deg,#8b7df6,#706be3)', badge:'🟢 Live on App Store', desc:'Built an iOS job application tracker that helps users organize applications, track progress, build resumes, and manage their job search. Developed the native iOS shell and WKWebView bridge using Swift, then built the interactive interface, animations, and business logic with JavaScript, HTML, and CSS. Architected secure backend integration using Supabase, PostgreSQL, and RESTful APIs, implementing row-level security and a Cloudflare Workers proxy to fetch and protect user data.', tags:['iOS','Swift','WKWebView','JavaScript','Supabase','PostgreSQL','Cloudflare Workers'], link:'https://apps.apple.com/us/app/flock-application-tracker/id6794522089' },
+  kiss:     { title:'KISS Budgeting App',               date:'Mar 2026 – Present',   img:'assets/proj-kiss.png',      badge:'🟢 Live on App Store', desc:'Full-stack iOS budgeting app with an on-device, privacy-first data model. Owned the complete launch pipeline — App Store metadata, keyword optimization, and a custom support site. Conducted competitive analysis to define a differentiated feature set.', tags:['iOS','Full-Stack','AI-Assisted','App Store','WKWebView','IndexedDB'], link:'https://apps.apple.com/us/app/kiss-budgeting/id6773980452' },
   cropper:  { title:'Auto Cropper',                      date:'Jan 2026',             img:'assets/proj-cropper.png',   badge:null, desc:'Python + OpenCV tool to automatically detect and crop subjects from images, removing backgrounds and centering with precision. Built with multi-processing for batch automation.', tags:['Python','OpenCV','Computer Vision','Automation'], link:'https://github.com/anthony-broderick/auto-cropper' },
   fault:    { title:'Digital Circuit Fault Analysis Tool',date:'Aug 2025 – Jan 2026', img:'assets/proj-fault.png',     badge:null, desc:'Interactive ATPG system in Python for gate-level circuits using the SSF model. Implemented D-Algorithm and PODEM, and built a circuit simulation engine with a netlist parser to validate test vectors across benchmark circuits.', tags:['Python','VLSI','OOP','Netlist Parsing','ATPG'], link:'https://github.com/anthony-broderick/fault_tpg' },
   ml:       { title:'ML Sports Detection & Tracking',    date:'Jul – Aug 2025',       img:'assets/proj-ml.png',        badge:'🔄 In Progress', desc:'Trained CV models for ball detection using Roboflow, benchmarking on accuracy and inference speed. Engineered algorithms to estimate player kinematics and interpolate missing detection frames.', tags:['Python','ML/CV','Roboflow','Object Tracking','mAP'], link:'https://github.com/anthony-broderick/ML-sports-analysis' },
@@ -711,7 +710,7 @@ function openProj(key) {
   const linkHtml = d.link ? `<a href="${d.link}" target="_blank" rel="noopener" class="proj-link-btn">View Project ↗</a>` : '';
   const badgeHtml = d.badge ? `<div class="proj-detail-badge">${d.badge}</div>` : '';
   document.getElementById('proj-detail-body').innerHTML = `
-    <div class="proj-detail-thumb"><img src="${d.img}" alt="${d.title}"></div>
+    <div class="proj-detail-thumb" style="${d.bg ? 'background:' + d.bg : ''}"><img src="${d.img}" alt="${d.title}" style="${d.bg ? 'object-fit:contain' : ''}"></div>
     ${badgeHtml}
     <div class="proj-detail-title">${d.title}</div>
     <div class="proj-detail-date">${d.date}</div>
